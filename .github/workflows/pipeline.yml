@@ -1,17 +1,56 @@
-name: Fly Deploy
+name: CI & Deployment Pipeline
+
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
+  ci:
+    name: Run Tests & Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run ESLint
+        run: npm run eslint
+
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
     concurrency: deploy-group
+
+    if: github.event_name == 'push'
+
+    needs: ci
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
+
+      - name: Fly Deploy
+        run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
