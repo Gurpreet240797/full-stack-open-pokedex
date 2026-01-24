@@ -8,8 +8,14 @@ primary_region = 'yyz'
 
 [build]
 
+[env]
+  PORT = "5050" 
+
+[processes]
+  app = "node app.js"
+
 [http_service]
-  internal_port = 8080
+  internal_port = 5050
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
