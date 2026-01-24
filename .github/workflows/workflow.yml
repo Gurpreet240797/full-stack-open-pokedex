@@ -1,0 +1,29 @@
+name: Deployment Pipeline
+on:
+  pull_request:
+    branches:
+      - [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_and_preview:
+    name: Create PR Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        run: npm test
+      - name: Run ESLint
+        run: npm run eslint
