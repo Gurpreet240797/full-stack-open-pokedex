@@ -2,7 +2,7 @@ name: Deployment Pipeline
 on:
   pull_request:
     branches:
-      - [main]
+      - main
     types: [opened, synchronize, reopened]
 
 permissions:
