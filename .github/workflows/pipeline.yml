@@ -11,7 +11,7 @@ on:
 
 permissions:
   checks: write
-  contents: read
+  contents: write
   pull-requests: write
 
 concurrency:
@@ -35,6 +35,21 @@ jobs:
 
       - name: Run ESLint
         run: npm run eslint
+  verion:
+    name: Bump version and tag
+    runs-on: ubuntu-latest
+    needs: ci
+
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bump version
+        uses: anothrNick/github-tag-action@1.64.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: "patch"
+          WITH_V: true
 
   deploy:
     name: Deploy app
@@ -43,13 +58,9 @@ jobs:
 
     if: github.event_name == 'push'
 
-    needs: ci
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: superfly/flyctl-actions/setup-flyctl@master
-
       - name: Fly Deploy
         run: flyctl deploy --remote-only
         env:
