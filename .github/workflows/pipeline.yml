@@ -94,7 +94,7 @@ jobs:
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           severity: error
-          details: Health check failed ❌ Status: ${{ steps.health.outputs.status }}
+          details: Health check failed ❌
 
   deploy:
     name: Deploy app
