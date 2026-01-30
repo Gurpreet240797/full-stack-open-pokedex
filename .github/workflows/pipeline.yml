@@ -52,10 +52,11 @@ jobs:
           WITH_V: true
           MAJOR_STRING_TOKEN: BREAKING CHANGE
 
-      - name: Extract version without "v"
+      - name: Get latest tag
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          git fetch --tags
+          VERSION=$(git describe --tags --abbrev=0 | sed 's/^v//')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Update package.json version
         run: |
