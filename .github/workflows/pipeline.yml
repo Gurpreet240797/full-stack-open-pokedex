@@ -8,6 +8,8 @@ on:
     branches:
       - main
     types: [opened, synchronize, reopened]
+  schedule:
+    - cron: "*/5 * * * *"
 
 permissions:
   checks: write
@@ -64,6 +66,39 @@ jobs:
           VERSION=$(git describe --tags --abbrev=0)
           echo "VERSION=$VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+  health-check:
+    name: Health Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+
+    steps:
+      - name: Check App health
+        id: health
+        run: |
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -fL --max-time 10 https://full-stack-open-pokedex-m0t3wa.fly.dev/health)
+          if [ "$STATUS" = "200" ]; then
+            echo "status=healthy" >> $GITHUB_OUTPUT
+          else
+            echo "status=unhealthy" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+        
+      - name: Discord Notify Success
+        if: steps.health.outputs.status == 'healthy'
+        uses: rjstone/discord-webhook-notify@v2
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          severity: info
+          details: Health check passed ✅
+
+      - name: Discord Notify Failure
+        if: failure()
+        uses: rjstone/discord-webhook-notify@v2
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          severity: error
+          details: Health check failed ❌ Status: ${{ steps.health.outputs.status }}
 
   deploy:
     name: Deploy app
