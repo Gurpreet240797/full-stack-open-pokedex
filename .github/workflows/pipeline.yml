@@ -77,12 +77,12 @@ jobs:
         id: health
         run: |
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" -fL --max-time 10 https://full-stack-open-pokedex-m0t3wa.fly.dev/health)
-          if [ "$STATUS" = "200" ]; then
-            echo "status=healthy" >> $GITHUB_OUTPUT
-          else
-            echo "status=unhealthy" >> $GITHUB_OUTPUT
-            exit 1
-          fi
+            if [ "$STATUS" = "200" ]; then
+              echo "status=healthy" >> $GITHUB_OUTPUT
+            else
+              echo "status=unhealthy" >> $GITHUB_OUTPUT
+              exit 1
+            fi
         
       - name: Discord Notify Success
         if: steps.health.outputs.status == 'healthy'
