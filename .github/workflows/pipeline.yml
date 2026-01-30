@@ -95,6 +95,6 @@ jobs:
         uses: rjstone/discord-webhook-notify@v2
         if: failure()
         with:
-        webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-        severity: error
-        details: SOMETHING WANT WRONG :(
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          severity: error
+          details: SOMETHING WANT WRONG :(
