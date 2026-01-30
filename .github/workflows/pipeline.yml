@@ -83,10 +83,18 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
-      - name: Discord Notify
+      - name: Discord Notify Success
         uses: rjstone/discord-webhook-notify@v2
         if: success()
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           severity: info
-          details: All tests passed!
+          details: ALL GOOD FOR PIPELINE :)
+
+      - name: Discord Notify FailureFailure
+        uses: rjstone/discord-webhook-notify@v2
+        if: failure()
+        with:
+        webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+        severity: error
+        details: SOMETHING WANT WRONG :(
