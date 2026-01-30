@@ -12,7 +12,7 @@ app.get('/version', (req, res) => {
 
 app.get('/health', (_req, res) => {
   res.json({
-    status: 'ok',
+    status: 'healthy',
     version: appVersion,
   })
 })
