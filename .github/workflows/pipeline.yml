@@ -52,6 +52,23 @@ jobs:
           WITH_V: true
           MAJOR_STRING_TOKEN: BREAKING CHANGE
 
+      - name: Extract version without "v"
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: Update package.json version
+        run: |
+          npm version $VERSION --no-git-tag-version
+
+      - name: Commit updated package.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add package.json package-lock.json
+          git commit -m "chore: bump package.json to $VERSION"
+          git push
+
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
